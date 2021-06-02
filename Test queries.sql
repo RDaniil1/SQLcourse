@@ -48,24 +48,24 @@ insert into destination values (1, 'Clayson Guerre', '662-399-2832', 1, 'Contrac
 insert into route_sheet values(1, 1, 1, 'Horns and hooves', 'Delivery', '9/10/2020');
 
 insert into driver values(2, 'Nanette Kiehne', 33333, 44444, 'C');
-insert into vehicle values(2, 2, 40, '1980', 'B00BB73', '6H4GD453CDS740571');
-insert into destination values (2, 'Freddie Exeter', '622-345-5354', 2, 'Contract', 422);
-insert into route_sheet values(2, 2, 2, 'Hooves', 'Delivery', '9/10/2019');
+insert into vehicle values(2, 1, 40, '1980', 'B00BB73', '6H4GD453CDS740571');
+insert into destination values (2, 'Freddie Exeter', '622-345-5354', 1, 'Contract', 422);
+insert into route_sheet values(2, 1, 1, 'Hooves', 'Delivery', '9/10/2019');
 
 insert into driver values(3, 'Kelvin Capinetti', 55555, 66666, 'E');
-insert into vehicle values(3, 3, 130, '1986', 'A00LL97', '3J4GD654TBS567518');
-insert into destination values (3, 'Clayson Guerre', '662-399-2832', 3, 'Contract', 4563);
-insert into route_sheet values(3, 3, 3, 'Horns and hooves', 'Delivery', '9/11/2016');
+insert into vehicle values(3, 1, 130, '1986', 'A00LL97', '3J4GD654TBS567518');
+insert into destination values (3, 'Clayson Guerre', '662-399-2832', 1, 'Contract', 4563);
+insert into route_sheet values(3, 1, 1, 'Horns and hooves', 'Delivery', '9/11/2016');
 
 insert into driver values(4, 'Gene Fanshawe', 77777, 88888, 'E');
-insert into vehicle values(4, 4, 20, '2013', 'A00KK97', '5D4GD563CDS735185');
-insert into destination values (4, 'Beulah Marsters', '662-423-1234', 4, 'Contract', 2233);
-insert into route_sheet values(4, 4, 4, 'Horns', 'Delivery', '29/12/2018');
+insert into vehicle values(4, 1, 20, '2013', 'A00KK97', '5D4GD563CDS735185');
+insert into destination values (4, 'Beulah Marsters', '662-423-1234', 1, 'Contract', 2233);
+insert into route_sheet values(4, 1, 1, 'Horns', 'Delivery', '29/12/2018');
 
 insert into driver values(5, 'Serene Bowlesworth', 99999, 10101, 'C');
-insert into vehicle values(5, 5, 660, '1995', 'P00PP97', '8M4GD345DTB053166');
-insert into destination values (5, 'Beulah Marsters', '662-423-1234', 5, 'Contract', 23113);
-insert into route_sheet values(5, 5, 5, 'Horns', 'Delivery', '19/9/2016');
+insert into vehicle values(5, 1, 660, '1995', 'P00PP97', '8M4GD345DTB053166');
+insert into destination values (5, 'Beulah Marsters', '662-423-1234', 1, 'Contract', 23113);
+insert into route_sheet values(5,1,1, 'Horns', 'Delivery', '19/9/2016');
 
 truncate table driver cascade;
 truncate table destination cascade;
@@ -192,22 +192,21 @@ insert into route_sheet values (ins_id, ins_vehicle_id, ins_destination_id,
 end;
 $$ language plpgsql;
 
-call insert_routesheet(6,3,3,'q','q','q');
+call insert_routesheet(3,1,1,'q','q','q');
 
 drop procedure  insert_routesheet;
 
-create procedure update_routesheet(upd_id int, upd_vehicle_id int, upd_destination_id int,
+create procedure update_routesheet(upd_id int,
 								   upd_oragnisation varchar, upd_reasaon varchar,
 								   upd_timestamp varchar)
 as $$
 begin
-update route_sheet set id_vehicle=upd_vehicle_id,
-id_destination=upd_destination_id,  organisation=upd_oragnisation,
+update route_sheet set organisation=upd_oragnisation,
 reason=upd_reasaon, time_stamp=upd_timestamp where id_routesheet=upd_id;
 end;
 $$ language plpgsql;
 
-call update_routesheet(5, 2,2 ,'sd', 'ds', 'ds');
+call update_routesheet(4, 'sd', 'ds', 'ds');
 
 drop procedure update_routesheet;
 
@@ -229,6 +228,8 @@ insert into driver values (ins_id, ins_firstlast, ins_passportNum,
 end;
 $$ language plpgsql;
 
+call insert_driver(3, 'ASD', 14323, 2344, 'F');
+
 create procedure update_driver(upd_id int, upd_firstlast varchar, upd_passportNum int,
 								   upd_driverDocument int, upd_category varchar)
 as $$
@@ -238,8 +239,12 @@ passport_num=upd_passportNum,  driver_document=upd_driverDocument,
 category=upd_category where id_driver=upd_id;
 end;
 $$ language plpgsql;
-
-call update_driver(5,'s', 232, 3232, 'as');
+select * from driver order by id_driver;
+select * from vehicle order by id_vehicle;
+select * from route_sheet order by id_routesheet;
+select * from destination order by id_destination;
+call update_driver(3,'ASD', 232, 3232, 'G');
+call update_vehicle(3,2343,5545,'TTTTT','45F3D4V5TV4WERF');
 
 --Для удаления, добавления и изменения данных в vehicle
 create procedure del_vehicle(delete_id int)
@@ -268,18 +273,21 @@ call insert_vehicle(6,5,6456,'asds', 'add','asd');
 
 drop procedure insert_vehicle;
 
-create procedure update_vehicle(upd_id int, upd_driver_id int, upd_vehicleAmount int,
+create procedure update_vehicle(upd_id int, upd_vehicleAmount int,
 								   upd_releaseTime varchar, upd_stateNum varchar,
 								   upd_vin varchar)
 as $$
 begin
-update vehicle set id_driver=upd_driver_id,
+update vehicle set
 vehicle_amount=upd_vehicleAmount,  release_time=upd_releaseTime,
 state_num=upd_stateNum, vin=upd_vin where id_vehicle=upd_id;
 end;
 $$ language plpgsql;
 
-call update_vehicle(5,5,660,'1995', 'P00PP97','8M4GD345DTB053166');
+call update_vehicle(5,660,'1995', 'P00PP97','8M4GD345DTB053166');
+
+select *
+from vehicle order by  id_vehicle;
 
 drop procedure update_vehicle;
 
@@ -379,4 +387,5 @@ drop owned by regular_role;
 drop role privileged_role;
 drop role regular_role;
 
+select max(id_driver) + 1 as next_id from driver;
 
