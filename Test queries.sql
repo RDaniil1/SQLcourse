@@ -72,36 +72,26 @@ truncate table destination cascade;
 
 --Второе задание, a:
 --Использовать переменные после знака равно
-SELECT v.id_vehicle, v.vehicle_amount,
-CASE
-WHEN vehicle_amount >= 200 THEN 'ok'
-WHEN vehicle_amount <= 200 THEN 'not ok'
-END
-as amount_result, d.id_driver, d.category FROM driver d INNER JOIN vehicle v on v.id_driver=d.id_driver;
+select v.id_vehicle, v.vehicle_amount, case when vehicle_amount >= 200 then 'ok' when vehicle_amount <= 200 then 'not ok' end as amount_result, d.id_driver, d.category FROM driver d INNER JOIN vehicle v on v.id_driver=d.id_driver;
 
 --Второе задание, b
-create view driver_dstFI_view as select ro.id_routesheet, dst.firstlast_dst, ro.organisation, v.id_vehicle, v.state_num, dr.id_driver, dr.firstlast from route_sheet ro
-inner join vehicle v on ro.id_vehicle=v.id_vehicle inner join driver dr on dr.id_driver=v.id_driver inner join destination dst on dst.id_destination=ro.id_destination;
+create view driver_dstFI_view as select ro.id_routesheet, ro.organisation, v.id_vehicle, v.state_num from route_sheet ro
+inner join vehicle v on ro.id_vehicle=v.id_vehicle;
 
 drop view driver_dstFI_view;
 
-select * from driver_dstFI_view order by state_num;
+select * from driver_dstFI_view order by organisation;
 
 --Второе задание, c
-select (select avg(dst.product_sum) from destination dst) as average_prod,
-(select count(dr.passport_num) from driver dr) as passport_count
-from (select v.id_driver, v.vehicle_amount from vehicle v) as vi_amount
-inner join driver dr on dr.id_driver=vi_amount.id_driver
+select (select avg(dst.product_sum) from destination dst) as average_prod, (select count(dr.id_driver) from driver dr) as driver_count
+from (select v.id_driver, v.vehicle_amount from vehicle v) as vi_amount inner join driver dr on dr.id_driver=vi_amount.id_driver
 where (select avg(amount.vehicle_amount) from (select v.vehicle_amount from vehicle v where dr.id_driver=v.id_driver) as amount) > 220;
 
 --Второе задание, d
-select v.id_vehicle, sum(v.vehicle_amount) as vehicle_sum, ro.id_routesheet, ro.organisation, dr.id_driver, dr.driver_document from route_sheet ro
-inner join vehicle v on ro.id_vehicle=v.id_vehicle
-inner join driver dr on v.id_driver=dr.id_driver group by dr.driver_document, ro.organisation, v.id_vehicle,  ro.id_routesheet, dr.id_driver having sum(dr.driver_document)>20000;
+select v.id_vehicle, sum(v.vehicle_amount) as vehicle_sum, ro.id_routesheet, ro.organisation, dr.id_driver, dr.driver_document from route_sheet ro inner join vehicle v on ro.id_vehicle=v.id_vehicle inner join driver dr on v.id_driver=dr.id_driver group by dr.driver_document, ro.organisation, v.id_vehicle,  ro.id_routesheet, dr.id_driver having sum(dr.driver_document)>20000;
 
 --Второе задание, e
-select ro.organisation, d.firstLast_dst from route_sheet ro inner join destination d on ro.id_destination=d.id_destination
-where  d.product_sum > all(select dr.driver_document from driver dr where dr.driver_document < 10);
+select ro.organisation, d.firstLast_dst from route_sheet ro inner join destination d on ro.id_destination=d.id_destination where  d.product_sum > all(select dr.driver_document from driver dr where dr.driver_document < 10);
 
 --Третье задание
 create index routeSheet_idx on route_sheet(time_stamp);
@@ -142,16 +132,20 @@ alter table driver drop column summing_data;
 
 --Пятое задание
 --Для удаления, добавления и изменения данных в destination
-create procedure del_destiantion(delete_id int)
+create procedure del_destination(delete_id int)
 as $$
 begin
 delete from destination dst where dst.id_destination=delete_id;
 end;
 $$ language plpgsql;
 
+drop procedure del_destination;
+
+call del_destination(6);
+
 create procedure insert_destination(ins_id int, ins_firstLast_dst varchar, ins_phone_number varchar,
 								   ins_dealAgreement_id int, ins_document_type varchar,
-								   ins_product_sum varchar)
+								   ins_product_sum int)
 as $$
 begin
 insert into destination values (ins_id, ins_firstLast_dst, ins_phone_number,
@@ -160,9 +154,13 @@ insert into destination values (ins_id, ins_firstLast_dst, ins_phone_number,
 end;
 $$ language plpgsql;
 
+call insert_destination(6, 'q', '3', 6, '3', 'e');
+
+drop  procedure insert_destination;
+
 create procedure update_destination(upd_id int, upd_firstLast_dst varchar, upd_phone_number varchar,
 								   upd_dealAgreement_id int, upd_document_type varchar,
-								   upd_product_sum varchar)
+								   upd_product_sum int)
 as $$
 begin
 update destination set  firstLast_dst=upd_firstLast_dst,
@@ -170,6 +168,10 @@ phone_number=upd_phone_number,  id_dealAgreement=upd_dealAgreement_id,
 document_type=upd_document_type, product_sum=upd_product_sum where id_destination=upd_id;
 end;
 $$ language plpgsql;
+
+drop procedure update_destination;
+
+call update_destination(1, 's', 's', 1, 'sd', 23);
 
 --Для удаления, добавления и изменения данных в route_sheet
 create procedure del_routesheet(delete_id int)
@@ -184,11 +186,15 @@ create procedure insert_routesheet(ins_id int, ins_vehicle_id int, ins_destinati
 								   ins_timestamp varchar)
 as $$
 begin
-insert into destination values (ins_id, ins_vehicle_id, ins_destination_id,
+insert into route_sheet values (ins_id, ins_vehicle_id, ins_destination_id,
 								   ins_organisation, ins_reason,
 								   ins_timestamp);
 end;
 $$ language plpgsql;
+
+call insert_routesheet(6,3,3,'q','q','q');
+
+drop procedure  insert_routesheet;
 
 create procedure update_routesheet(upd_id int, upd_vehicle_id int, upd_destination_id int,
 								   upd_oragnisation varchar, upd_reasaon varchar,
@@ -200,6 +206,10 @@ id_destination=upd_destination_id,  organisation=upd_oragnisation,
 reason=upd_reasaon, time_stamp=upd_timestamp where id_routesheet=upd_id;
 end;
 $$ language plpgsql;
+
+call update_routesheet(5, 2,2 ,'sd', 'ds', 'ds');
+
+drop procedure update_routesheet;
 
 select * from route_sheet;
 --Для удаления, добавления и изменения данных в driver
@@ -228,6 +238,8 @@ passport_num=upd_passportNum,  driver_document=upd_driverDocument,
 category=upd_category where id_driver=upd_id;
 end;
 $$ language plpgsql;
+
+call update_driver(5,'s', 232, 3232, 'as');
 
 --Для удаления, добавления и изменения данных в vehicle
 create procedure del_vehicle(delete_id int)
@@ -298,14 +310,14 @@ select  * from vehicle;
 create procedure curs_procedure()
 as $$
 declare
-    _cursor cursor for select id_destination, firstLast_dst, phone_number from destination;
+    _cursor cursor for select firstLast_dst, phone_number from destination;
     _record record;
 begin
     open _cursor;
     loop
         fetch _cursor into _record;
         exit when not FOUND;
-        update destination set firstLast_dst = 'Unknown' where id_destination=_record.id_destination;
+        update destination set firstLast_dst=_record.firstlast_dst;
     end loop;
     close _cursor;
 end;
@@ -346,14 +358,25 @@ drop function seek_certain_driver_doc();
 select * from seek_certain_driver_doc() where id_driv%2=0;
 
 --Девятое задание
-create role privileged_role;
-create role regular_role;
-grant select, update, insert, delete on destination, driver, vehicle, route_sheet to privileged_role;
-grant select, insert on destination, driver, route_sheet, vehicle to regular_role;
+create role privileged_role login;
+create role regular_role login;
+
+grant connect on database test to privileged_role;
+grant connect on database test to regular_role;
+grant select, update, insert, delete on destination, driver, vehicle, route_sheet, driver_dstFI_view  to privileged_role;
+grant select, insert on destination, driver, route_sheet, vehicle, driver_dstFI_view  to regular_role;
 create user _admin password 'admin';
 create user _user password '0000';
-grant _admin to privileged_role;
-grant _user to regular_role;
+grant  privileged_role to _admin;
+grant regular_role to _user;
 
+drop user _admin;
+drop user _user;
+
+drop owned by privileged_role;
+drop owned by regular_role;
+
+drop role privileged_role;
+drop role regular_role;
 
 
