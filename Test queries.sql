@@ -13,7 +13,7 @@ create table vehicle(
 	release_time int not null,
 	state_num varchar not null,
 	vin varchar not null,
-	foreign key (id_driver) references driver(id_driver)
+	foreign key (id_driver) references driver(id_driver) on delete cascade
 );
 
 create table destination(
@@ -23,7 +23,7 @@ create table destination(
 	id_dealAgreement serial not null,
 	document_type varchar not null,
 	product_sum int not null,
-    foreign key (id_dealAgreement) references destination(id_destination)
+    foreign key (id_dealAgreement) references destination(id_destination) on delete cascade
 );
 
 create table route_sheet(
@@ -33,14 +33,9 @@ create table route_sheet(
 	organisation varchar not null,
 	reason varchar not null,
 	time_stamp varchar not null,
-	foreign key (id_vehicle) references vehicle(id_vehicle),
-	foreign key (id_destination) references destination(id_destination)
+	foreign key (id_vehicle) references vehicle(id_vehicle) on delete cascade,
+	foreign key (id_destination) references destination(id_destination) on delete cascade
 );
-
-drop table destination cascade;
-drop table route_sheet cascade;
-drop table vehicle cascade;
-drop table driver cascade;
 
 insert into driver values(1, 'Aleen Mansfield', 11111, 22222, 'E');
 insert into vehicle values(1, 1, 100, '1990', 'A00AA97', '2F4HL453CRG678102');
@@ -67,9 +62,6 @@ insert into vehicle values(5, 1, 660, '1995', 'P00PP97', '8M4GD345DTB053166');
 insert into destination values (5, 'Beulah Marsters', '662-423-1234', 1, 'Contract', 23113);
 insert into route_sheet values(5,1,1, 'Horns', 'Delivery', '19/9/2016');
 
-truncate table driver cascade;
-truncate table destination cascade;
-
 --Второе задание, a:
 --Использовать переменные после знака равно
 select v.id_vehicle, v.vehicle_amount, case when vehicle_amount >= 200 then 'ok' when vehicle_amount <= 200 then 'not ok' end as amount_result, d.id_driver, d.category FROM driver d INNER JOIN vehicle v on v.id_driver=d.id_driver;
@@ -77,8 +69,6 @@ select v.id_vehicle, v.vehicle_amount, case when vehicle_amount >= 200 then 'ok'
 --Второе задание, b
 create view driver_dstFI_view as select ro.id_routesheet, ro.organisation, v.id_vehicle, v.state_num from route_sheet ro
 inner join vehicle v on ro.id_vehicle=v.id_vehicle;
-
-drop view driver_dstFI_view;
 
 select * from driver_dstFI_view order by organisation;
 
@@ -102,10 +92,6 @@ select id_destination, organisation, time_stamp from route_sheet where time_stam
 
 select id_vehicle, vin from vehicle where vin='5D4GD563CDS735185';
 
-drop index routeSheet_idx;
-
-drop index vehicle_idx;
-
 --Четвёртое задание
 create function func()
 returns trigger
@@ -119,29 +105,16 @@ $$ language plpgsql;
 create trigger trigg after update on driver for each row
 when  ((pg_trigger_depth()=0)) execute procedure func();
 
-drop trigger trigg on driver;
-drop function func();
-
 update driver set passport_num=999 where id_driver=1;
-
-select * from driver;
-
-alter table driver add column summing_data integer;
-
-alter table driver drop column summing_data;
 
 --Пятое задание
 --Для удаления, добавления и изменения данных в destination
 create procedure del_destination(delete_id int)
 as $$
 begin
-delete from destination dst where dst.id_destination=delete_id;
+delete from destination  where id_destination=delete_id;
 end;
 $$ language plpgsql;
-
-drop procedure del_destination;
-
-call del_destination(6);
 
 create procedure insert_destination(ins_id int, ins_firstLast_dst varchar, ins_phone_number varchar,
 								   ins_dealAgreement_id int, ins_document_type varchar,
@@ -154,10 +127,6 @@ insert into destination values (ins_id, ins_firstLast_dst, ins_phone_number,
 end;
 $$ language plpgsql;
 
-call insert_destination(6, 'q', '3', 6, '3', 'e');
-
-drop  procedure insert_destination;
-
 create procedure update_destination(upd_id int, upd_firstLast_dst varchar, upd_phone_number varchar,
 								   upd_dealAgreement_id int, upd_document_type varchar,
 								   upd_product_sum int)
@@ -168,10 +137,6 @@ phone_number=upd_phone_number,  id_dealAgreement=upd_dealAgreement_id,
 document_type=upd_document_type, product_sum=upd_product_sum where id_destination=upd_id;
 end;
 $$ language plpgsql;
-
-drop procedure update_destination;
-
-call update_destination(1, 's', 's', 1, 'sd', 23);
 
 --Для удаления, добавления и изменения данных в route_sheet
 create procedure del_routesheet(delete_id int)
@@ -192,10 +157,6 @@ insert into route_sheet values (ins_id, ins_vehicle_id, ins_destination_id,
 end;
 $$ language plpgsql;
 
-call insert_routesheet(3,1,1,'q','q','q');
-
-drop procedure  insert_routesheet;
-
 create procedure update_routesheet(upd_id int,
 								   upd_oragnisation varchar, upd_reasaon varchar,
 								   upd_timestamp varchar)
@@ -205,10 +166,6 @@ update route_sheet set organisation=upd_oragnisation,
 reason=upd_reasaon, time_stamp=upd_timestamp where id_routesheet=upd_id;
 end;
 $$ language plpgsql;
-
-call update_routesheet(4, 'sd', 'ds', 'ds');
-
-drop procedure update_routesheet;
 
 select * from route_sheet;
 --Для удаления, добавления и изменения данных в driver
@@ -228,8 +185,6 @@ insert into driver values (ins_id, ins_firstlast, ins_passportNum,
 end;
 $$ language plpgsql;
 
-call insert_driver(3, 'ASD', 14323, 2344, 'F');
-
 create procedure update_driver(upd_id int, upd_firstlast varchar, upd_passportNum int,
 								   upd_driverDocument int, upd_category varchar)
 as $$
@@ -239,12 +194,6 @@ passport_num=upd_passportNum,  driver_document=upd_driverDocument,
 category=upd_category where id_driver=upd_id;
 end;
 $$ language plpgsql;
-select * from driver order by id_driver;
-select * from vehicle order by id_vehicle;
-select * from route_sheet order by id_routesheet;
-select * from destination order by id_destination;
-call update_driver(3,'ASD', 232, 3232, 'G');
-call update_vehicle(3,2343,5545,'TTTTT','45F3D4V5TV4WERF');
 
 --Для удаления, добавления и изменения данных в vehicle
 create procedure del_vehicle(delete_id int)
@@ -254,12 +203,8 @@ delete from vehicle v where v.id_vehicle=delete_id;
 end;
 $$ language plpgsql;
 
-call del_vehicle(6);
-
-drop procedure del_vehicle;
-
 create procedure insert_vehicle(ins_id int, ins_driver_id int, ins_vehicleAmount int,
-								   ins_releaseTime varchar, ins_stateNum varchar,
+								   ins_releaseTime int, ins_stateNum varchar,
 								   ins_vin varchar)
 as $$
 begin
@@ -269,12 +214,8 @@ insert into vehicle values (ins_id, ins_driver_id, ins_vehicleAmount,
 end;
 $$ language plpgsql;
 
-call insert_vehicle(6,5,6456,'asds', 'add','asd');
-
-drop procedure insert_vehicle;
-
 create procedure update_vehicle(upd_id int, upd_vehicleAmount int,
-								   upd_releaseTime varchar, upd_stateNum varchar,
+								   upd_releaseTime int, upd_stateNum varchar,
 								   upd_vin varchar)
 as $$
 begin
@@ -284,24 +225,17 @@ state_num=upd_stateNum, vin=upd_vin where id_vehicle=upd_id;
 end;
 $$ language plpgsql;
 
-call update_vehicle(5,660,'1995', 'P00PP97','8M4GD345DTB053166');
-
-select *
-from vehicle order by  id_vehicle;
-
-drop procedure update_vehicle;
-
 --Шестое задание
 create procedure _transtction()
 as $$
     declare max_value int;
 begin
     max_value = (select max(vehicle_amount) from vehicle);
-if (select max_value from vehicle) < 100 then
-    update vehicle set vehicle_amount = 0 where id_vehicle>0;
+if  max_value <= 0 then
+    update vehicle set vehicle_amount = 0 where id_vehicle=1;
 rollback;
 else
-    update vehicle set vehicle_amount = 999 where id_vehicle>0;
+    update vehicle set vehicle_amount = 999 where id_vehicle=1;
 commit;
 end if;
 end;
@@ -309,12 +243,7 @@ $$ language plpgsql;
 
 call _transtction();
 
-drop procedure _transtction();
-
-select  * from vehicle;
-
 --Седьмое задание
-
 create procedure curs_procedure()
 as $$
 declare
@@ -333,10 +262,6 @@ $$ language plpgsql;
 
 call curs_procedure();
 
-select * from destination;
-
-drop procedure curs_procedure();
-
 --Восьмое задание
 create function seek_certain_passport(id_pass int)
 returns int
@@ -347,8 +272,6 @@ select passport_num into pass_num from driver where id_driver = id_pass;
     return pass_num;
 end;
 $$ language plpgsql;
-
-drop function  seek_certain_passport(id_pass int);
 
 select  seek_certain_passport(1) from driver;
 
@@ -361,9 +284,7 @@ begin
 end;
 $$ language plpgsql;
 
-drop function seek_certain_driver_doc();
-
-select * from seek_certain_driver_doc() where id_driv%2=0;
+select * from seek_certain_driver_doc();
 
 --Девятое задание
 create role privileged_role login;
@@ -387,5 +308,4 @@ drop owned by regular_role;
 drop role privileged_role;
 drop role regular_role;
 
-select max(id_driver) + 1 as next_id from driver;
 
