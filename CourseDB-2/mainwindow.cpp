@@ -591,20 +591,22 @@ void MainWindow::PrintEntry3Table(QSqlQuery query, QString str)
     if (query.exec(str))
        {
            qStandardItemModel = new QStandardItemModel();
-           qStandardItemModel->setHorizontalHeaderLabels(QStringList()<< "Среднее кол-во продуктов" << "Сумма водителей");
+           qStandardItemModel->setHorizontalHeaderLabels(QStringList()<< "Среднее кол-во продуктов" << "Сумма водителей" << "Имя, фамилия получателя");
 
            QSqlRecord rec = query.record();
-           QString average_prod, driver_count;
+           QString average_prod, driver_count, firstlast_dst;
 
            while (query.next())
            {
                average_prod = query.value(rec.indexOf("average_prod")).toString();
                driver_count = query.value(rec.indexOf("driver_count")).toString();
+               firstlast_dst = query.value(rec.indexOf("firstlast_dst")).toString();
 
                QStandardItem* itemCol1(new QStandardItem(average_prod));
                QStandardItem* itemCol2(new QStandardItem(driver_count));
+               QStandardItem* itemCol3(new QStandardItem(firstlast_dst));
 
-               qStandardItemModel->appendRow(QList<QStandardItem*>()<<itemCol1<<itemCol2);
+               qStandardItemModel->appendRow(QList<QStandardItem*>()<<itemCol1<<itemCol2<<itemCol3);
            }
            ui->tableView->setModel(qStandardItemModel);
     }
@@ -714,7 +716,7 @@ void MainWindow::on_entryAction3_triggered()
     if(_user.isEmpty() == false && _pass.isEmpty() == false && tableState >= 0 && tableState <= 4)
     {
         QSqlQuery query;
-        QString str_insert = "select (select avg(dst.product_sum) from destination dst) as average_prod, (select count(dr.id_driver) from driver dr) as driver_count from (select v.id_driver, v.vehicle_amount from vehicle v) as vi_amount inner join driver dr on dr.id_driver=vi_amount.id_driver where (select avg(amount.vehicle_amount) from (select v.vehicle_amount from vehicle v where dr.id_driver=v.id_driver) as amount) > 220;";
+        QString str_insert = "select (select avg(dst.product_sum) from destination dst) as average_prod, (select count(dr.id_driver) from driver dr) as driver_count, dst.firstLast_dst from (select v.id_driver, v.vehicle_amount from vehicle v) as vi_amount inner join driver dr on dr.id_driver=vi_amount.id_driver inner join destination dst on dst.id_destination=1 where (select avg(amount.vehicle_amount) from (select v.vehicle_amount from vehicle v where dr.id_driver=v.id_driver) as amount) > 0;";
         query.exec(str_insert);
         PrintEntry3Table(query, str_insert);
     }
