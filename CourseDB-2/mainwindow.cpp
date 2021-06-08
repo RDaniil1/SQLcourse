@@ -121,7 +121,6 @@ void MainWindow::on_driverAction_triggered()
     if(_user.isEmpty() == false && _pass.isEmpty() == false)
     {
         tableState = driverTableChoosed;
-        ui->label->setText("Номер водителя:");
         PrintDriverTable();
     }
     else QMessageBox::critical(this, "Ошибка", "Вы должны зайти под своим пользователем");
@@ -132,7 +131,6 @@ void MainWindow::on_vehicleAction_triggered()
     if(_user.isEmpty() == false && _pass.isEmpty() == false)
     {
         tableState = vehicleTableChoosed;
-        ui->label->setText("Номер машины:");
         PrintVehicleTable();
     }
     else QMessageBox::critical(this, "Ошибка", "Вы должны зайти под своим пользователем");
@@ -143,7 +141,6 @@ void MainWindow::on_route_sheetAction_triggered()
     if(_user.isEmpty() == false && _pass.isEmpty() == false)
     {
         tableState = routeSheetTableChoosed;
-        ui->label->setText("Номер маршрутного листа:");
         PrintRouteSheetTable();
     }
     else QMessageBox::critical(this, "Ошибка", "Вы должны зайти под своим пользователем");
@@ -154,7 +151,6 @@ void MainWindow::on_destinationAction_triggered()
     if(_user.isEmpty() == false && _pass.isEmpty() == false)
     {
         tableState = destinationTableChoosed;
-        ui->label->setText("Номер получателя:");
         PrintDestinationTable();
     }
     else QMessageBox::critical(this, "Ошибка", "Вы должны зайти под своим пользователем");
@@ -170,7 +166,6 @@ void MainWindow::PrintDriverTable()
 
            QSqlRecord rec = query.record();
            QString idDriver, firstlast, passport_num, driver_document, category, summing_data;
-           ui->listWidget->clear();
            while (query.next())
            {
                idDriver = query.value(rec.indexOf("id_driver")).toString();
@@ -189,7 +184,6 @@ void MainWindow::PrintDriverTable()
                qStandardItemModel->appendRow(QList<QStandardItem*>()<< itemCol1 << itemCol2
                                              << itemCol3 << itemCol4 << itemCol5);
 
-               ui->listWidget->addItem(idDriver);
            }
            ui->tableView->setModel(qStandardItemModel);
 
@@ -207,7 +201,6 @@ void MainWindow::PrintVehicleTable()
            QSqlRecord rec = query.record();
            QString idVehicle, vehicle_amount, release_time, state_num, vin;
 
-           ui->listWidget->clear();
            while (query.next())
            {
                idVehicle = query.value(rec.indexOf("id_vehicle")).toString();
@@ -222,7 +215,6 @@ void MainWindow::PrintVehicleTable()
                QStandardItem* itemCol4(new QStandardItem(vin));
 
                qStandardItemModel->appendRow(QList<QStandardItem*>()<<itemCol1<<itemCol2<<itemCol3 << itemCol4);
-               ui->listWidget->addItem(idVehicle);
            }
            ui->tableView->setModel(qStandardItemModel);
        }
@@ -239,7 +231,6 @@ void MainWindow::PrintRouteSheetTable()
            QSqlRecord rec = query.record();
            QString idRouteSheet, organisation, reason, timeStamp;
 
-           ui->listWidget->clear();
            while (query.next())
            {
                idRouteSheet = query.value(rec.indexOf("id_routesheet")).toString();
@@ -253,7 +244,6 @@ void MainWindow::PrintRouteSheetTable()
 
                qStandardItemModel->appendRow(QList<QStandardItem*>()<<itemCol1<<itemCol2<<itemCol3);
 
-               ui->listWidget->addItem(idRouteSheet);
            }
            ui->tableView->setModel(qStandardItemModel);
        }
@@ -270,7 +260,6 @@ void MainWindow::PrintDestinationTable()
            QSqlRecord rec = query.record();
            QString idDestination, firstlast_dst, phone_number, document_type, product_sum;
 
-           ui->listWidget->clear();
            while (query.next())
            {
                idDestination = query.value(rec.indexOf("id_destination")).toString();
@@ -286,7 +275,6 @@ void MainWindow::PrintDestinationTable()
 
                qStandardItemModel->appendRow(QList<QStandardItem*>()<<itemCol1<<itemCol2<<itemCol3 << itemCol4);
 
-               ui->listWidget->addItem(idDestination);
            }
            ui->tableView->setModel(qStandardItemModel);
        }
@@ -414,10 +402,23 @@ void MainWindow::DeleteDriverEntry()
 {
     QSqlQuery query;
 
-    int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+   QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-    QString str_insert = "CALL del_driver('%1');";
-    QString row = str_insert.arg(QString::number(selectedIndex));
+   QString firstLast = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+   QString passportNum = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+   QString driverDocument = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+   QString category = ui->tableView->model()->index(indexList[0].row(), 3).data().toString();
+
+   QString str_insert = "select id_driver from driver where firstlast='%1' and passport_num='%2' and driver_document='%3' and category='%4';";
+
+   QString row = str_insert.arg(firstLast, passportNum, driverDocument, category);
+   query.exec(row);
+   query.next();
+   QSqlRecord rec = query.record();
+   QString delInd = query.value(rec.indexOf("id_driver")).toString();
+
+    str_insert = "CALL del_driver('%1');";
+    row = str_insert.arg(delInd);
     query.exec(row);
     PrintDriverTable();
 }
@@ -426,10 +427,24 @@ void MainWindow::DeleteVehicleEntry()
 {
     QSqlQuery query;
 
-    int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+    QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-    QString str_insert = "CALL del_vehicle('%1');";
-    QString row = str_insert.arg(QString::number(selectedIndex));
+    QString vehicleAmount = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+    QString releaseTime = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+    QString stateNum = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+    QString vin = ui->tableView->model()->index(indexList[0].row(), 3).data().toString();
+
+    QString str_insert = "select id_vehicle from vehicle where vehicle_amount='%1' and release_time='%2' and state_num='%3' and vin='%4';";
+
+    QString row = str_insert.arg(vehicleAmount, releaseTime, stateNum, vin);
+    query.exec(row);
+    query.next();
+    QSqlRecord rec = query.record();
+    QString delInd = query.value(rec.indexOf("id_vehicle")).toString();
+
+
+    str_insert = "CALL del_vehicle('%1');";
+    row = str_insert.arg(delInd);
     query.exec(row);
     PrintVehicleTable();
 }
@@ -438,10 +453,23 @@ void MainWindow::DeleteRouteSheetEntry()
 {
     QSqlQuery query;
 
-    int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+    QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-    QString str_insert = "CALL del_routesheet('%1');";
-    QString row = str_insert.arg(QString::number(selectedIndex));
+    QString organisation = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+    QString reason = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+    QString timeStamp = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+
+    QString str_insert = "select id_routesheet from route_sheet where organisation='%1' and reason='%2' and time_stamp='%3';";
+
+    QString row = str_insert.arg(organisation, reason, timeStamp);
+    query.exec(row);
+    query.next();
+    QSqlRecord rec = query.record();
+    QString delInd = query.value(rec.indexOf("id_routesheet")).toString();
+
+
+    str_insert = "CALL del_routesheet('%1');";
+    row = str_insert.arg(delInd);
     query.exec(row);
     PrintRouteSheetTable();
 }
@@ -450,10 +478,23 @@ void MainWindow::DeleteDestinationEntry()
 {
     QSqlQuery query;
 
-    int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+    QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-    QString str_insert = "CALL del_destination('%1');";
-    QString row = str_insert.arg(QString::number(selectedIndex));
+    QString firstLastDst = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+    QString phoneNumber = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+    QString documentType = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+    QString productSum = ui->tableView->model()->index(indexList[0].row(), 3).data().toString();
+
+    QString str_insert = "select id_destination from destination where firstlast_dst='%1' and phone_number='%2' and document_type='%3' and product_sum = '%4';";
+
+    QString row = str_insert.arg(firstLastDst, phoneNumber, documentType, productSum);
+    query.exec(row);
+    query.next();
+    QSqlRecord rec = query.record();
+    QString delInd = query.value(rec.indexOf("id_destination")).toString();
+
+    str_insert = "CALL del_destination('%1');";
+    row = str_insert.arg(delInd);
     query.exec(row);
     PrintDestinationTable();
 }
@@ -468,10 +509,23 @@ void MainWindow::EditDriverEntry()
         editEntryDriver->CopyValues(firstLast, passportNum, driverDocument, category);
         QSqlQuery query;
 
-        int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+        QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-        QString str_insert = "CALL update_driver('%1', '%2', '%3', '%4', '%5');";
-        QString row = str_insert.arg(QString::number(selectedIndex), firstLast,
+        QString firstLast_ind = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+        QString passportNum_ind = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+        QString driverDocument_ind = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+        QString category_ind = ui->tableView->model()->index(indexList[0].row(), 3).data().toString();
+
+        QString str_insert = "select id_driver from driver where firstlast='%1' and passport_num='%2' and driver_document='%3' and category='%4';";
+
+        QString row = str_insert.arg(firstLast_ind, passportNum_ind, driverDocument_ind, category_ind);
+        query.exec(row);
+        query.next();
+        QSqlRecord rec = query.record();
+        QString updInd = query.value(rec.indexOf("id_driver")).toString();
+
+        str_insert = "CALL update_driver('%1', '%2', '%3', '%4', '%5');";
+        row = str_insert.arg(updInd, firstLast,
                                      passportNum, driverDocument, category);
         query.exec(row);
         PrintDriverTable();
@@ -488,10 +542,23 @@ void MainWindow::EditVehicleEntry()
         editEntryVehicle->CopyValues(vehicleAmount, releaseTime, stateNum, vin);
         QSqlQuery query;
 
-        int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+        QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-        QString str_insert = "CALL update_vehicle('%1', '%2', '%3', '%4', '%5');";
-        QString row = str_insert.arg(QString::number(selectedIndex), vehicleAmount, releaseTime, stateNum, vin);
+        QString vehicleAmount_ind = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+        QString releaseTime_ind = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+        QString stateNum_ind = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+        QString vin_ind = ui->tableView->model()->index(indexList[0].row(), 3).data().toString();
+
+        QString str_insert = "select id_vehicle from vehicle where vehicle_amount='%1' and release_time='%2' and state_num='%3' and vin='%4';";
+
+        QString row = str_insert.arg(vehicleAmount_ind, releaseTime_ind, stateNum_ind, vin_ind);
+        query.exec(row);
+        query.next();
+        QSqlRecord rec = query.record();
+        QString updInd = query.value(rec.indexOf("id_vehicle")).toString();
+
+        str_insert = "CALL update_vehicle('%1', '%2', '%3', '%4', '%5');";
+        row = str_insert.arg(updInd, vehicleAmount, releaseTime, stateNum, vin);
         query.exec(row);
         PrintVehicleTable();
     }
@@ -507,10 +574,22 @@ void MainWindow::EditRouteSheetEntry()
         editEntryRouteSheet->CopyValues(organisation, reason, timeStamp);
         QSqlQuery query;
 
-        int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+        QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-        QString str_insert = "CALL update_routesheet('%1', '%2', '%3', '%4');";
-        QString row = str_insert.arg(QString::number(selectedIndex), organisation, reason, timeStamp);
+        QString organisation_ind = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+        QString reason_ind = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+        QString timeStamp_ind = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+
+        QString str_insert = "select id_routesheet from route_sheet where organisation='%1' and reason='%2' and time_stamp='%3';";
+
+        QString row = str_insert.arg(organisation_ind, reason_ind, timeStamp_ind);
+        query.exec(row);
+        query.next();
+        QSqlRecord rec = query.record();
+        QString updInd = query.value(rec.indexOf("id_routesheet")).toString();
+
+        str_insert = "CALL update_routesheet('%1', '%2', '%3', '%4');";
+        row = str_insert.arg(updInd, organisation, reason, timeStamp);
         query.exec(row);
         PrintRouteSheetTable();
     }
@@ -526,11 +605,24 @@ void MainWindow::EditDestinationEntry()
         editEntryDestination->CopyValues(firstLastDst, phoneNumber, documentType, productSum);
         QSqlQuery query;
 
-        int selectedIndex = ui->listWidget->currentItem()->text().toInt();
+        QModelIndexList indexList = ui->tableView->selectionModel()->selectedRows();
 
-        QString str_insert = "CALL update_destination('%1', '%2', '%3', '%4', '%5', '%6');";
-        QString row = str_insert.arg(QString::number(selectedIndex), firstLastDst, phoneNumber,
-                                     QString::number(selectedIndex), documentType, productSum);
+        QString firstLastDst_ind = ui->tableView->model()->index(indexList[0].row(), 0).data().toString();
+        QString phoneNumber_ind = ui->tableView->model()->index(indexList[0].row(), 1).data().toString();
+        QString documentType_ind = ui->tableView->model()->index(indexList[0].row(), 2).data().toString();
+        QString productSum_ind = ui->tableView->model()->index(indexList[0].row(), 3).data().toString();
+
+        QString str_insert = "select id_destination from destination where firstlast_dst='%1' and phone_number='%2' and document_type='%3' and product_sum = '%4';";
+
+        QString row = str_insert.arg(firstLastDst_ind, phoneNumber_ind, documentType_ind, productSum_ind);
+        query.exec(row);
+        query.next();
+        QSqlRecord rec = query.record();
+        QString updInd = query.value(rec.indexOf("id_destination")).toString();
+
+        str_insert = "CALL update_destination('%1', '%2', '%3', '%4', '%5', '%6');";
+        row = str_insert.arg(updInd, firstLastDst, phoneNumber,
+                                     updInd, documentType, productSum);
         query.exec(row);
         PrintDestinationTable();
     }
