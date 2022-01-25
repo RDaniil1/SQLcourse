@@ -15,8 +15,7 @@ public:
     explicit AddEntryVehicle(QWidget *parent = nullptr);
     ~AddEntryVehicle();
 
-    void CopyValues(QString &idVehicle, QString &idDriver,
-                    QString &vehicleAmount, QString &releaseTime,
+    void CopyValues(QString &vehicleAmount, QString &releaseTime,
                     QString &stateNum, QString &vin);
 
 private:

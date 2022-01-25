@@ -15,9 +15,8 @@ public:
     explicit EditEntryDestination(QWidget *parent = nullptr);
     ~EditEntryDestination();
 
-    void CopyValues(QString &idDestination, QString &firstLastDst,
-                    QString &phoneNumber, QString &idDealAgreement,
-                    QString &documentType, QString &productSum);
+    void CopyValues(QString &firstLastDst,
+                    QString &phoneNumber, QString &documentType, QString &productSum);
 
 private:
     Ui::EditEntryDestination *ui;

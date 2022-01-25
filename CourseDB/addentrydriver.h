@@ -14,7 +14,7 @@ class AddEntryDriver : public QDialog
 public:
     explicit AddEntryDriver(QWidget *parent = nullptr);
     ~AddEntryDriver();
-    void CopyValues(QString &idDriver, QString &firstLast,
+    void CopyValues(QString &firstLast,
                     QString &passportNum, QString &driverDocument, QString &category);
 
 private:

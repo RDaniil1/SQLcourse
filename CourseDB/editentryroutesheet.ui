@@ -16,65 +16,35 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Номер получателя:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="idVehicleEdit"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Номер машины:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="organisationEdit"/>
-     </item>
-     <item row="3" column="0">
+     <item row="0" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Организация:</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
         <string>Причина доставки:</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Номер маршрутного листа:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="idDestinationEdit"/>
-     </item>
-     <item row="4" column="1">
+     <item row="1" column="1">
       <widget class="QLineEdit" name="reasonEdit"/>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="idRouteSheetEdit"/>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="timeStampEdit"/>
-     </item>
-     <item row="5" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Время доставки:</string>
        </property>
       </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="organisationEdit"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="timeStampEdit"/>
      </item>
     </layout>
    </item>

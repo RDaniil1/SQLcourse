@@ -13,10 +13,6 @@ SOURCES += \
     addentrydriver.cpp \
     addentryroutesheet.cpp \
     addentryvehicle.cpp \
-    deleteentrydestination.cpp \
-    deleteentrydriver.cpp \
-    deleteentryroutesheet.cpp \
-    deleteentryvehicle.cpp \
     editentrydestination.cpp \
     editentrydriver.cpp \
     editentryroutesheet.cpp \
@@ -32,10 +28,6 @@ HEADERS += \
     addentrydriver.h \
     addentryroutesheet.h \
     addentryvehicle.h \
-    deleteentrydestination.h \
-    deleteentrydriver.h \
-    deleteentryroutesheet.h \
-    deleteentryvehicle.h \
     editentrydestination.h \
     editentrydriver.h \
     editentryroutesheet.h \
@@ -50,10 +42,6 @@ FORMS += \
     addentrydriver.ui \
     addentryroutesheet.ui \
     addentryvehicle.ui \
-    deleteentrydestination.ui \
-    deleteentrydriver.ui \
-    deleteentryroutesheet.ui \
-    deleteentryvehicle.ui \
     editentrydestination.ui \
     editentrydriver.ui \
     editentryroutesheet.ui \

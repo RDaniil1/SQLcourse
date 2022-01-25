@@ -15,7 +15,7 @@ public:
     explicit EditEntryDriver(QWidget *parent = nullptr);
     ~EditEntryDriver();
 
-    void CopyValues(QString &idDriver, QString &firstLast,
+    void CopyValues(QString &firstLast,
                     QString &passportNum, QString &driverDocument, QString &category);
 
 

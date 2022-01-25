@@ -13,10 +13,8 @@ EditEntryVehicle::~EditEntryVehicle()
     delete ui;
 }
 
-void EditEntryVehicle::CopyValues(QString &idVehicle, QString &idDriver, QString &vehicleAmount, QString &releaseTime, QString &stateNum, QString &vin)
+void EditEntryVehicle::CopyValues(QString &vehicleAmount, QString &releaseTime, QString &stateNum, QString &vin)
 {
-    idVehicle = ui->idVehicleEdit->text();
-    idDriver = ui->idDriverEdit->text();
     vehicleAmount = ui->vehicleAmountEdit->text();
     releaseTime = ui->releaseTimeEdit->text();
     stateNum = ui->stateNumEdit->text();

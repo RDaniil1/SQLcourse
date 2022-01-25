@@ -15,8 +15,7 @@ public:
     explicit AddEntryRouteSheet(QWidget *parent = nullptr);
     ~AddEntryRouteSheet();
 
-    void CopyValues(QString &idRouteSheet, QString &idVehicle,
-                    QString &idDestination, QString &organisation,
+    void CopyValues(QString &organisation,
                     QString &reason, QString &timeStamp);
 
 

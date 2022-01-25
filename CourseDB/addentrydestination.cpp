@@ -13,13 +13,11 @@ AddEntryDestination::~AddEntryDestination()
     delete ui;
 }
 
-void AddEntryDestination::CopyValues(QString &idDestination, QString &firstLastDst, QString &phoneNumber,
-                                     QString &idDealAgreement, QString &documentType, QString &productSum)
+void AddEntryDestination::CopyValues(QString &firstLastDst, QString &phoneNumber,
+                                     QString &documentType, QString &productSum)
 {
-    idDestination = ui->idDestiantionEdit->text();
     firstLastDst = ui->firstLastDstEdit->text();
     phoneNumber = ui->phoneNumberEdit->text();
-    idDealAgreement = ui->idDealAgreementEdit->text();
     documentType = ui->documentTypeEdit->text();
     productSum = ui->productSumEdit->text();
 }

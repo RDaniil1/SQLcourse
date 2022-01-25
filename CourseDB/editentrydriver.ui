@@ -16,55 +16,45 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="driverDocumentEdit"/>
-     </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="passportNumLabel">
-       <property name="text">
-        <string>Номер паспорта:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
       <widget class="QLabel" name="driverDocumentLabel">
        <property name="text">
         <string>Номер документа водителя:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="firstLastLabel">
-       <property name="text">
-        <string>Имя, фамилия:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="idDriverLabel">
-       <property name="text">
-        <string>Номер водителя:</string>
-       </property>
-      </widget>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="driverDocumentEdit"/>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="idDriverEdit"/>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="passportNumEdit"/>
-     </item>
-     <item row="1" column="1">
       <widget class="QLineEdit" name="firstLastEdit"/>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="categoryLabel">
        <property name="text">
         <string>Категория:</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QLineEdit" name="categoryEdit"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="passportNumEdit"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="firstLastLabel">
+       <property name="text">
+        <string>Имя, фамилия:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="passportNumLabel">
+       <property name="text">
+        <string>Номер паспорта:</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

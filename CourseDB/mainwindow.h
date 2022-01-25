@@ -10,6 +10,8 @@
 #include <QStandardItem>
 #include <QSqlQuery>
 #include <QtSql>
+#include <QItemSelectionModel>
+#include <QModelIndex>
 
 #include "login.h"
 
@@ -17,11 +19,6 @@
 #include "addentryvehicle.h"
 #include "addentryroutesheet.h"
 #include "addentrydestination.h"
-
-#include "deleteentrydriver.h"
-#include "deleteentryvehicle.h"
-#include "deleteentryroutesheet.h"
-#include "deleteentrydestination.h"
 
 #include "editentrydriver.h"
 #include "editentrydestination.h"
@@ -89,11 +86,6 @@ private:
     AddEntryRouteSheet *addEntryRouteSheet;
     AddEntryDestination *addEntryDestiantion;
 
-    DeleteEntryDriver *deleteEntryDriver;
-    DeleteEntryVehicle *deleteEntryVehicle;
-    DeleteEntryRouteSheet *deleteEntryRouteSheet;
-    DeleteEntryDestination *deleteEntryDestination;
-
     EditEntryDriver *editEntryDriver;
     EditEntryDestination *editEntryDestination;
     EditEntryVehicle *editEntryVehicle;
@@ -104,6 +96,7 @@ private:
 
     TableState tableState;
     QStandardItemModel* qStandardItemModel;
+    QItemSelectionModel *select;
     Ui::MainWindow *ui;
 
     void PrintDriverTable();
